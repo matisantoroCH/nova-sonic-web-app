@@ -3,9 +3,12 @@
 import React from 'react';
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import useAppStore from '@/lib/store';
+import { useTheme } from './ThemeProvider';
+import ThemeToggle from './ThemeToggle';
 
 export default function AppSideNavigation() {
   const { currentView, setCurrentView } = useAppStore();
+  const { theme, toggleTheme } = useTheme();
 
   const handleNavigationChange = ({ detail }: { detail: { href: string } }) => {
     const href = detail.href;
@@ -15,6 +18,10 @@ export default function AppSideNavigation() {
       setCurrentView('orders');
     } else if (href === '#calendar') {
       setCurrentView('calendar');
+    } else if (href === '#theme') {
+      // Cambiar el tema
+      toggleTheme();
+      return;
     }
   };
 
@@ -57,6 +64,15 @@ export default function AppSideNavigation() {
           type: 'link',
           text: 'Calendario de Citas',
           href: '#calendar'
+        },
+        {
+          type: 'divider'
+        },
+        {
+          type: 'link',
+          text: 'Tema',
+          href: '#theme',
+          info: <ThemeToggle />
         }
       ]}
     />

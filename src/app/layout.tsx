@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "@cloudscape-design/global-styles/index.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import ThemeWrapper from "@/components/ThemeWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +19,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider>
+          <ThemeWrapper>
+            {children}
+          </ThemeWrapper>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

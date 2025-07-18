@@ -71,9 +71,34 @@ export interface User {
 
 // WebSocket Types
 export interface WebSocketMessage {
-  type: 'chat' | 'order_update' | 'appointment_update' | 'audio_transcription' | 'audio_response' | 'transcription_complete' | 'nova_speaking' | 'nova_silent';
+  type: 'chat' | 'order_update' | 'appointment_update' | 'audio_transcription' | 'audio_response' | 'transcription_complete' | 'nova_speaking' | 'nova_silent' | 'tool_execution' | 'tool_result';
   payload: any;
   timestamp: Date;
+}
+
+// Nova Sonic Tools
+export interface NovaTool {
+  name: string;
+  description: string;
+  parameters: any;
+  execute: (params: any) => Promise<any>;
+}
+
+export interface ToolExecution {
+  toolName: string;
+  parameters: any;
+  result?: any;
+  success: boolean;
+  message: string;
+}
+
+// Voice Conversation Types
+export interface VoiceSession {
+  isListening: boolean;
+  isProcessing: boolean;
+  userTranscription: string;
+  novaResponse: string;
+  confidence: number;
 }
 
 // Store Types
@@ -97,6 +122,12 @@ export interface AppState {
   isLoading: boolean;
   error: string | null;
   
+  // Voice Session
+  voiceSession: VoiceSession;
+  
+  // Tool Execution
+  lastToolExecution: ToolExecution | null;
+  
   // Actions
   addMessage: (message: ChatMessage) => void;
   setRecording: (isRecording: boolean) => void;
@@ -110,4 +141,13 @@ export interface AppState {
   setCurrentView: (view: 'chat' | 'orders' | 'calendar') => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  
+  // Voice Session Actions
+  setVoiceSession: (session: Partial<VoiceSession>) => void;
+  updateUserTranscription: (transcription: string) => void;
+  updateNovaResponse: (response: string) => void;
+  
+  // Tool Execution Actions
+  executeTool: (toolName: string, parameters: any) => Promise<ToolExecution>;
+  setLastToolExecution: (execution: ToolExecution | null) => void;
 } 
