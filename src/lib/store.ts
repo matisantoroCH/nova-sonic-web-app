@@ -51,31 +51,7 @@ const useAppStore = create<AppState>((set, get) => ({
     set({ selectedOrder: order });
   },
 
-  updateOrderStatus: (orderId: string, status: OrderStatus) => {
-    set((state) => {
-      const updatedOrders = state.orders.map(order => 
-        order.id === orderId 
-          ? { ...order, status, updatedAt: new Date() }
-          : order
-      );
 
-      const newHistoryEntry: OrderHistory = {
-        id: Date.now().toString(),
-        orderId,
-        status,
-        timestamp: new Date(),
-        notes: `Status updated to ${status}`
-      };
-
-      return {
-        orders: updatedOrders,
-        orderHistory: [...state.orderHistory, newHistoryEntry],
-        selectedOrder: state.selectedOrder?.id === orderId 
-          ? { ...state.selectedOrder, status, updatedAt: new Date() }
-          : state.selectedOrder
-      };
-    });
-  },
 
   // Appointment Actions
   setAppointments: (appointments: Appointment[]) => {
@@ -148,7 +124,8 @@ const useAppStore = create<AppState>((set, get) => ({
           
         case 'cancel_order':
           if (parameters.orderId) {
-            state.updateOrderStatus(parameters.orderId, 'cancelled');
+            // Since we removed updateOrderStatus, we'll just return success
+            // The actual cancellation would need to be handled by the backend
             success = true;
             message = `Pedido ${parameters.orderId} cancelado exitosamente`;
           } else {

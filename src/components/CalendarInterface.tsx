@@ -19,6 +19,7 @@ import {
 import Calendar from '@cloudscape-design/components/calendar';
 import useAppStore from '@/lib/store';
 import { Appointment } from '@/types';
+import { apiService } from '@/lib/api';
 
 // Mock data for appointments
 const mockAppointments: Appointment[] = [
@@ -27,7 +28,7 @@ const mockAppointments: Appointment[] = [
     patientName: 'Ana Martínez',
     patientEmail: 'ana.martinez@email.com',
     doctorName: 'Dr. Carlos Rodríguez',
-    date: new Date('2024-01-20T10:00:00'),
+    date: new Date('2025-07-22T10:00:00'),
     duration: 30,
     type: 'consultation',
     notes: 'Consulta de rutina',
@@ -37,8 +38,8 @@ const mockAppointments: Appointment[] = [
     id: '2',
     patientName: 'Luis Fernández',
     patientEmail: 'luis.fernandez@email.com',
-    doctorName: 'Dra. María López',
-    date: new Date('2024-01-22T14:30:00'),
+    doctorName: 'Dra. Ana López',
+    date: new Date('2025-07-24T14:30:00'),
     duration: 45,
     type: 'follow-up',
     notes: 'Seguimiento post-cirugía',
@@ -46,13 +47,13 @@ const mockAppointments: Appointment[] = [
   },
   {
     id: '3',
-    patientName: 'Carmen Ruiz',
-    patientEmail: 'carmen.ruiz@email.com',
-    doctorName: 'Dr. Juan Pérez',
-    date: new Date('2024-01-25T09:00:00'),
+    patientName: 'Carmen Silva',
+    patientEmail: 'carmen.silva@email.com',
+    doctorName: 'Dr. Roberto Mendoza',
+    date: new Date('2025-07-25T09:00:00'),
     duration: 60,
     type: 'emergency',
-    notes: 'Dolor agudo en el abdomen',
+    notes: 'Dolor agudo en el pecho - Requiere evaluación inmediata',
     status: 'scheduled'
   }
 ];
@@ -105,6 +106,7 @@ export default function CalendarInterface() {
   const { appointments, selectedDate, setAppointments, addAppointment, setSelectedDate } = useAppStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     patientName: '',
     patientEmail: '',
@@ -117,23 +119,34 @@ export default function CalendarInterface() {
   });
 
   useEffect(() => {
-    // Load mock data
-    setAppointments(mockAppointments);
+    const loadAppointments = async () => {
+      setIsLoading(true);
+      try {
+        const appointmentsData = await apiService.getAppointments();
+        setAppointments(appointmentsData);
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        // Fallback to mock data if API fails
+        setAppointments(mockAppointments);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAppointments();
   }, [setAppointments]);
 
   const handleDateChange = ({ detail }: { detail: { value: string } }) => {
-    const date = new Date(detail.value);
+    // Create date in local timezone to avoid timezone issues
+    const [year, month, day] = detail.value.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     setSelectedDate(date);
-    
-    // Find appointments for the selected date
-    const dayAppointments = appointments.filter(apt => 
-      apt.date.toDateString() === date.toDateString()
-    );
-    
-    if (dayAppointments.length > 0) {
-      setSelectedAppointment(dayAppointments[0]);
-      setIsModalVisible(true);
-    }
+
+  };
+
+  const handleAppointmentClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsModalVisible(true);
   };
 
   const handleCreateAppointment = () => {
@@ -200,7 +213,7 @@ export default function CalendarInterface() {
       <SpaceBetween size="l">
         <Box>
           <Calendar
-            value={selectedDate?.toISOString().split('T')[0] || ''}
+            value={selectedDate ? selectedDate.toLocaleDateString('en-CA') : ''}
             onChange={handleDateChange}
             locale="es-ES"
           />
@@ -221,7 +234,8 @@ export default function CalendarInterface() {
               {getAppointmentsForDate(selectedDate).map(appointment => (
                 <div
                   key={appointment.id}
-                  className="p-4 border border-gray-200 rounded-lg bg-white"
+                  className="p-4 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleAppointmentClick(appointment)}
                 >
                   <SpaceBetween size="s">
                     <div className="flex justify-between items-center">
@@ -246,6 +260,9 @@ export default function CalendarInterface() {
                         <strong>Notas:</strong> {appointment.notes}
                       </div>
                     )}
+                    <div className="text-sm text-blue-600 font-medium">
+                      Click para ver detalles →
+                    </div>
                   </SpaceBetween>
                 </div>
               ))}

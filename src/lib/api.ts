@@ -1,0 +1,95 @@
+import { Order, Appointment } from '@/types';
+import { getApiUrl } from './api-config';
+
+// API service for handling HTTP requests
+class ApiService {
+  private baseUrl: string;
+
+  constructor() {
+    this.baseUrl = getApiUrl('');
+  }
+
+  // Generic fetch wrapper with error handling
+  private async fetchWithErrorHandling<T>(
+    endpoint: string, 
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    
+    try {
+      const response = await fetch(url, {
+        mode: 'cors', // Explicitly enable CORS
+        credentials: 'omit', // Don't send cookies
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        ...options,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API request failed for ${endpoint}:`, error);
+      throw error;
+    }
+  }
+
+  // Orders API
+  async getOrders(): Promise<Order[]> {
+    const response = await this.fetchWithErrorHandling<any>('/orders');
+    const ordersData = response.data || response; // Handle both wrapped and unwrapped responses
+    return ordersData.map((order: any) => ({
+      ...order,
+      createdAt: new Date(order.createdAt),
+      updatedAt: new Date(order.updatedAt),
+      estimatedDelivery: order.estimatedDelivery ? new Date(order.estimatedDelivery) : undefined
+    }));
+  }
+
+  async getOrderById(orderId: string): Promise<Order> {
+    const response = await this.fetchWithErrorHandling<any>(`/orders/${orderId}`);
+    const orderData = response.data || response; // Handle both wrapped and unwrapped responses
+    return {
+      ...orderData,
+      createdAt: new Date(orderData.createdAt),
+      updatedAt: new Date(orderData.updatedAt),
+      estimatedDelivery: orderData.estimatedDelivery ? new Date(orderData.estimatedDelivery) : undefined
+    };
+  }
+
+  // Appointments API
+  async getAppointments(): Promise<Appointment[]> {
+    const response = await this.fetchWithErrorHandling<any>('/appointments');
+    const appointmentsData = response.data || response; // Handle both wrapped and unwrapped responses
+    return appointmentsData.map((appointment: any) => ({
+      ...appointment,
+      date: new Date(appointment.date)
+    }));
+  }
+
+  async getAppointmentsByDate(date: Date): Promise<Appointment[]> {
+    const dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const response = await this.fetchWithErrorHandling<any>(`/appointments?date=${dateString}`);
+    const appointmentsData = response.data || response; // Handle both wrapped and unwrapped responses
+    return appointmentsData.map((appointment: any) => ({
+      ...appointment,
+      date: new Date(appointment.date)
+    }));
+  }
+
+  async getAppointmentById(appointmentId: string): Promise<Appointment> {
+    const response = await this.fetchWithErrorHandling<any>(`/appointments/${appointmentId}`);
+    const appointmentData = response.data || response; // Handle both wrapped and unwrapped responses
+    return {
+      ...appointmentData,
+      date: new Date(appointmentData.date)
+    };
+  }
+}
+
+// Export singleton instance
+export const apiService = new ApiService(); 

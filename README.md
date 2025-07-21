@@ -90,28 +90,36 @@ src/
 ### Orders Interface
 - **Tabla de pedidos** con información completa
 - **Modal de detalles** con productos y estado
-- **Actualización de estados** en tiempo real
-- **Historial de cambios** de estado
+- **Visualización de estados** (solo lectura)
 - **Información de seguimiento** y entrega
+- **Carga de datos** desde API Gateway
 
 ### Calendar Interface
 - **Calendario interactivo** de Cloudscape Design
 - **Vista de citas** por fecha seleccionada
 - **Creación de nuevas citas** con formulario completo
 - **Diferentes tipos** de citas (consulta, seguimiento, emergencia, rutina)
-- **Gestión de estados** de citas
+- **Carga de datos** desde API Gateway
 
 ## 🔧 Configuración
 
-### WebSocket
-La aplicación está configurada para conectarse a un servidor WebSocket en `ws://localhost:8080`. Para cambiar la URL:
+### Variables de Entorno
+La aplicación utiliza variables de entorno para configurar las URLs de conexión. Crea un archivo `.env.local` en la raíz del proyecto:
 
-```typescript
-// src/lib/websocket.ts
-constructor(url: string = 'ws://tu-servidor:puerto') {
-  this.url = url;
-}
+```env
+# API Gateway Configuration
+NEXT_PUBLIC_API_GATEWAY_URL=https://your-api-gateway-url.amazonaws.com
+
+# WebSocket Configuration (for ChatInterface)
+NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:8080
 ```
+
+### Configuración de API
+- **PedidosInterface** y **CalendarInterface** usan HTTP requests al API Gateway
+- **ChatInterface** usa WebSocket para comunicación en tiempo real
+- Si la API no está disponible, se usan datos mock como fallback
+
+Para más detalles sobre la configuración, consulta [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md).
 
 ### Estado Global
 El estado se gestiona con Zustand y incluye:

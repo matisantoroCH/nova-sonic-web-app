@@ -1,4 +1,5 @@
 import { WebSocketMessage } from '@/types';
+import { getWebSocketUrl } from './config';
 
 class WebSocketManager {
   private ws: WebSocket | null = null;
@@ -10,8 +11,8 @@ class WebSocketManager {
   private onConnectCallback: (() => void) | null = null;
   private onDisconnectCallback: (() => void) | null = null;
 
-  constructor(url: string = 'ws://localhost:8080') {
-    this.url = url;
+  constructor(url?: string) {
+    this.url = url || getWebSocketUrl();
   }
 
   connect(): Promise<void> {

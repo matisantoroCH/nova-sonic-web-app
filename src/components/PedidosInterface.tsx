@@ -11,8 +11,6 @@ import {
   Table,
   Modal,
   Cards,
-  Select,
-  Badge,
   TextFilter,
   Pagination,
   CollectionPreferences,
@@ -20,7 +18,7 @@ import {
 } from '@cloudscape-design/components';
 import useAppStore from '@/lib/store';
 import { Order, OrderStatus } from '@/types';
-import Swal from 'sweetalert2';
+import { apiService } from '@/lib/api';
 
 // Mock data for orders
 const mockOrders: Order[] = [
@@ -94,14 +92,6 @@ const mockOrders: Order[] = [
   }
 ];
 
-const statusOptions = [
-  { label: 'Pendiente', value: 'pending' },
-  { label: 'Procesando', value: 'processing' },
-  { label: 'Enviado', value: 'shipped' },
-  { label: 'Entregado', value: 'delivered' },
-  { label: 'Cancelado', value: 'cancelled' }
-];
-
 const getStatusColor = (status: OrderStatus) => {
   switch (status) {
     case 'pending':
@@ -137,9 +127,8 @@ const getStatusText = (status: OrderStatus) => {
 };
 
 export default function PedidosInterface() {
-  const { orders, selectedOrder, setOrders, selectOrder, updateOrderStatus } = useAppStore();
+  const { orders, selectedOrder, setOrders, selectOrder } = useAppStore();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('pending');
   const [selectedItems, setSelectedItems] = useState<Order[]>([]);
   const [filteringText, setFilteringText] = useState('');
   const [currentPageIndex, setCurrentPageIndex] = useState(1);
@@ -159,19 +148,22 @@ export default function PedidosInterface() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Load mock data
-    setOrders(mockOrders);
+    const loadOrders = async () => {
+      setIsLoading(true);
+      try {
+        const ordersData = await apiService.getOrders();
+        setOrders(ordersData);
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        // Fallback to mock data if API fails
+        setOrders(mockOrders);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadOrders();
   }, [setOrders]);
-
-  const handleStatusUpdate = (orderId: string) => {
-    updateOrderStatus(orderId, selectedStatus);
-    setIsModalVisible(false);
-  };
-
-  const handleCreateOrder = () => {
-    // TODO: Implement order creation
-    console.log('Crear nuevo pedido');
-  };
 
   const tableItems = orders.map(order => ({
     id: order.id,
@@ -307,7 +299,7 @@ export default function PedidosInterface() {
       <div className="mb-8">
         <Header
           variant="h1"
-          description="Gestión y seguimiento de pedidos con filtrado avanzado y paginación"
+          description="Visualización y seguimiento de pedidos con filtrado avanzado y paginación"
         >
           Seguimiento de Pedidos
         </Header>
@@ -581,30 +573,6 @@ export default function PedidosInterface() {
                   loadingText="Cargando productos..."
                   empty="No hay productos en este pedido"
                 />
-              </div>
-
-              {/* Actualizar Estado */}
-              <div className="p-8 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <Header variant="h3" className="mb-6">
-                  Actualizar Estado
-                </Header>
-                <SpaceBetween size="m" direction="horizontal">
-                  <div className="flex-1">
-                    <Select
-                      selectedOption={statusOptions.find(opt => opt.value === selectedStatus) || null}
-                      onChange={({ detail }) => setSelectedStatus(detail.selectedOption.value as OrderStatus)}
-                      options={statusOptions}
-                      placeholder="Seleccionar estado"
-                    />
-                  </div>
-                  <Button
-                    variant="primary"
-                    iconName="refresh"
-                    onClick={() => handleStatusUpdate(selectedOrder.id)}
-                  >
-                    Actualizar Estado
-                  </Button>
-                </SpaceBetween>
               </div>
             </div>
           </Modal>

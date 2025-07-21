@@ -134,7 +134,6 @@ export interface AppState {
   setTranscribing: (isTranscribing: boolean) => void;
   setOrders: (orders: Order[]) => void;
   selectOrder: (order: Order | null) => void;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   setAppointments: (appointments: Appointment[]) => void;
   addAppointment: (appointment: Appointment) => void;
   setSelectedDate: (date: Date | null) => void;

@@ -372,15 +372,15 @@ export default function ChatInterface() {
 
       <SpaceBetween size="l">
         {/* Voice Controls */}
-        <Box textAlign="center">
+        <Box textAlign="center" padding={{ top: 's', bottom: 'xxs' }}>
           <SpaceBetween size="m" direction="horizontal">
-                         <Button
-               variant={voiceSession.isListening ? 'primary' : 'normal'}
-               iconName={voiceSession.isListening ? 'microphone-off' : 'microphone'}
-               onClick={voiceSession.isListening ? stopVoiceConversation : startVoiceConversation}
-             >
-               {voiceSession.isListening ? 'Detener Conversación' : 'Iniciar Conversación por Voz'}
-             </Button>
+            <Button
+              variant={voiceSession.isListening ? 'primary' : 'normal'}
+              iconName={voiceSession.isListening ? 'microphone-off' : 'microphone'}
+              onClick={voiceSession.isListening ? stopVoiceConversation : startVoiceConversation}
+            >
+              {voiceSession.isListening ? 'Detener Conversación' : 'Iniciar Conversación por Voz'}
+            </Button>
           </SpaceBetween>
         </Box>
 
