@@ -1,6 +1,35 @@
 import { Order, Appointment } from '@/types';
 import { getApiUrl } from './api-config';
 
+// Helper function to ensure dates are displayed in Argentina timezone
+function parseArgentinaDate(dateString: string): Date {
+  // If the date string already has timezone info (like -03:00), use it as is
+  if (dateString.includes('T') && (dateString.includes('Z') || dateString.includes('+'))) {
+    return new Date(dateString);
+  }
+  
+  // If it's a simple date string, assume it's in Argentina timezone (UTC-3)
+  const argentinaOffset = -3 * 60; // UTC-3 in minutes
+  const date = new Date(dateString);
+  const utcTime = date.getTime() + (date.getTimezoneOffset() * 60000);
+  return new Date(utcTime + (argentinaOffset * 60000));
+}
+
+// Helper functions for formatting dates in Argentina timezone
+export function formatArgentinaDate(date: Date, options?: Intl.DateTimeFormatOptions): string {
+  return date.toLocaleDateString('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    ...options
+  });
+}
+
+export function formatArgentinaTime(date: Date, options?: Intl.DateTimeFormatOptions): string {
+  return date.toLocaleTimeString('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    ...options
+  });
+}
+
 // API service for handling HTTP requests
 class ApiService {
   private baseUrl: string;
@@ -44,9 +73,9 @@ class ApiService {
     const ordersData = response.data || response; // Handle both wrapped and unwrapped responses
     return ordersData.map((order: any) => ({
       ...order,
-      createdAt: new Date(order.createdAt),
-      updatedAt: new Date(order.updatedAt),
-      estimatedDelivery: order.estimatedDelivery ? new Date(order.estimatedDelivery) : undefined
+      createdAt: parseArgentinaDate(order.createdAt),
+      updatedAt: parseArgentinaDate(order.updatedAt),
+      estimatedDelivery: order.estimatedDelivery ? parseArgentinaDate(order.estimatedDelivery) : undefined
     }));
   }
 
@@ -55,11 +84,13 @@ class ApiService {
     const orderData = response.data || response; // Handle both wrapped and unwrapped responses
     return {
       ...orderData,
-      createdAt: new Date(orderData.createdAt),
-      updatedAt: new Date(orderData.updatedAt),
-      estimatedDelivery: orderData.estimatedDelivery ? new Date(orderData.estimatedDelivery) : undefined
+      createdAt: parseArgentinaDate(orderData.createdAt),
+      updatedAt: parseArgentinaDate(orderData.updatedAt),
+      estimatedDelivery: orderData.estimatedDelivery ? parseArgentinaDate(orderData.estimatedDelivery) : undefined
     };
   }
+
+
 
   // Appointments API
   async getAppointments(): Promise<Appointment[]> {
@@ -67,7 +98,7 @@ class ApiService {
     const appointmentsData = response.data || response; // Handle both wrapped and unwrapped responses
     return appointmentsData.map((appointment: any) => ({
       ...appointment,
-      date: new Date(appointment.date)
+      date: parseArgentinaDate(appointment.date)
     }));
   }
 
@@ -77,7 +108,7 @@ class ApiService {
     const appointmentsData = response.data || response; // Handle both wrapped and unwrapped responses
     return appointmentsData.map((appointment: any) => ({
       ...appointment,
-      date: new Date(appointment.date)
+      date: parseArgentinaDate(appointment.date)
     }));
   }
 
@@ -86,9 +117,11 @@ class ApiService {
     const appointmentData = response.data || response; // Handle both wrapped and unwrapped responses
     return {
       ...appointmentData,
-      date: new Date(appointmentData.date)
+      date: parseArgentinaDate(appointmentData.date)
     };
   }
+
+
 }
 
 // Export singleton instance

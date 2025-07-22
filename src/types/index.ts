@@ -19,7 +19,7 @@ export interface AudioRecording {
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface Order {
-  id: string;
+  id: string; // Este campo ya es numérico en DynamoDB
   customerName: string;
   customerEmail: string;
   items: OrderItem[];
@@ -49,7 +49,7 @@ export interface OrderHistory {
 
 // Appointment Types
 export interface Appointment {
-  id: string;
+  id: string; // Este campo ya es numérico en DynamoDB
   patientName: string;
   patientEmail: string;
   doctorName: string;

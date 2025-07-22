@@ -19,7 +19,7 @@ import {
 import Calendar from '@cloudscape-design/components/calendar';
 import useAppStore from '@/lib/store';
 import { Appointment } from '@/types';
-import { apiService } from '@/lib/api';
+import { apiService, formatArgentinaDate, formatArgentinaTime } from '@/lib/api';
 
 // Mock data for appointments
 const mockAppointments: Appointment[] = [
@@ -241,13 +241,16 @@ export default function CalendarInterface() {
                     <div className="flex justify-between items-center">
                       <div>
                         <strong>{appointment.patientName}</strong> - {appointment.doctorName}
+                        <span className="ml-2 text-sm text-blue-600 font-medium">
+                          #{appointment.id}
+                        </span>
                       </div>
                       <StatusIndicator type={getStatusColor(appointment.status)}>
                         {getStatusText(appointment.status)}
                       </StatusIndicator>
                     </div>
                     <div className="text-sm text-gray-600">
-                      {appointment.date.toLocaleTimeString('es-ES', { 
+                      {formatArgentinaTime(appointment.date, { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })} - {appointment.duration} min
@@ -289,6 +292,10 @@ export default function CalendarInterface() {
             <SpaceBetween size="l">
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <strong>Número de Cita:</strong> 
+                  #{selectedAppointment.id}
+                </div>
+                <div>
                   <strong>Paciente:</strong> {selectedAppointment.patientName}
                 </div>
                 <div>
@@ -298,10 +305,10 @@ export default function CalendarInterface() {
                   <strong>Doctor:</strong> {selectedAppointment.doctorName}
                 </div>
                 <div>
-                  <strong>Fecha:</strong> {selectedAppointment.date.toLocaleDateString()}
+                  <strong>Fecha:</strong> {formatArgentinaDate(selectedAppointment.date)}
                 </div>
                 <div>
-                  <strong>Hora:</strong> {selectedAppointment.date.toLocaleTimeString()}
+                  <strong>Hora:</strong> {formatArgentinaTime(selectedAppointment.date)}
                 </div>
                 <div>
                   <strong>Duración:</strong> {selectedAppointment.duration} min

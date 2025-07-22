@@ -18,7 +18,7 @@ import {
 } from '@cloudscape-design/components';
 import useAppStore from '@/lib/store';
 import { Order, OrderStatus } from '@/types';
-import { apiService } from '@/lib/api';
+import { apiService, formatArgentinaDate } from '@/lib/api';
 
 // Mock data for orders
 const mockOrders: Order[] = [
@@ -181,7 +181,7 @@ export default function PedidosInterface() {
   const columnDefinitions = [
     {
       id: 'id',
-      header: 'ID Pedido',
+      header: 'Número Pedido',
       cell: (item: any) => (
         <Link href="#" onFollow={() => {
           const order = orders.find(o => o.id === item.id);
@@ -190,7 +190,7 @@ export default function PedidosInterface() {
             setIsModalVisible(true);
           }
         }}>
-          {item.id}
+          #{item.id}
         </Link>
       ),
       sortingField: 'id',
@@ -227,7 +227,7 @@ export default function PedidosInterface() {
     {
       id: 'createdAt',
       header: 'Fecha Creación',
-      cell: (item: any) => item.createdAt.toLocaleDateString('es-ES'),
+      cell: (item: any) => formatArgentinaDate(item.createdAt),
       sortingField: 'createdAt'
     },
     {
@@ -509,7 +509,7 @@ export default function PedidosInterface() {
                     {selectedOrder.estimatedDelivery && (
                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <span className="font-semibold text-gray-700">Entrega Estimada:</span>
-                        <span className="text-gray-900">{selectedOrder.estimatedDelivery.toLocaleDateString('es-ES', { 
+                        <span className="text-gray-900">{formatArgentinaDate(selectedOrder.estimatedDelivery, { 
                           weekday: 'long', 
                           year: 'numeric', 
                           month: 'long', 
