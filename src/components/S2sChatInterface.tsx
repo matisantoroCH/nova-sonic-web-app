@@ -581,7 +581,7 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
                             <Textarea
                                 onChange={({ detail }) => this.setState({configChatHistory: detail.value})}
                                 value={this.state.configChatHistory}
-                                rows={15}
+                                rows={5}
                                 placeholder="{}"
                             />
                         </FormField>
