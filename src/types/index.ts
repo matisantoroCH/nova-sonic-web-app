@@ -71,7 +71,7 @@ export interface User {
 
 // WebSocket Types
 export interface WebSocketMessage {
-  type: 'chat' | 'order_update' | 'appointment_update' | 'audio_transcription' | 'audio_response' | 'transcription_complete' | 'nova_speaking' | 'nova_silent' | 'tool_execution' | 'tool_result';
+  type: 'chat' | 'order_update' | 'appointment_update' | 'audio_transcription' | 'audio_response' | 'transcription_complete' | 'nova_speaking' | 'nova_silent' | 'tool_execution' | 'tool_result' | 'session_started' | 'session_ended' | 'nova_response' | 'transcription' | 'error' | 'audio_chunk' | 'start_session' | 'end_session' | 's2s_event';
   payload: any;
   timestamp: Date;
 }

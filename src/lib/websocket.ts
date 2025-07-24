@@ -1,5 +1,5 @@
 import { WebSocketMessage } from '@/types';
-import { getWebSocketUrl } from './config';
+import { getWebSocketUrl } from './api-config';
 
 class WebSocketManager {
   private ws: WebSocket | null = null;
@@ -159,6 +159,11 @@ class WebSocketManager {
       },
       timestamp: new Date()
     };
+    this.send(message);
+  }
+
+  // Send generic message
+  sendMessage(message: WebSocketMessage): void {
     this.send(message);
   }
 

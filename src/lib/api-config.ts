@@ -4,7 +4,7 @@ export const apiConfig = {
   apiGatewayUrl: 'https://4y57g84n59.execute-api.us-east-1.amazonaws.com/demo',
   
   // WebSocket URL for real-time communication (ChatInterface)
-  websocketUrl: 'ws://localhost:8080',
+  websocketUrl: 'ws://localhost:8081',
   
   // API endpoints
   endpoints: {
