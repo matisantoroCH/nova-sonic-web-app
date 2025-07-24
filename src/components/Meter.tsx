@@ -163,11 +163,17 @@ class Meter extends React.Component<{}, MeterState> {
 
     render() {
         return (
-            <div className="meter">
-                <b>Session time</b>: {this.state.elapsedDisplay}<br/>
-                <b>Total tokens</b>: {(this.state.totalInputSpeechToken + this.state.totalInputTextToken + this.state.totalOutputSpeechToken + this.state.totalOutputTextToken).toLocaleString()} 
-                &nbsp; ({this.formatCurrency(this.state.totalInputTextCost + this.state.totalInputSpeechCost + this.state.totalOutputTextCost + this.state.totalOutputSpeechCost)})
-                &nbsp;&nbsp;<Link onClick={()=>{this.setState({showMeterDetail: true})}}><Icon name="support" /></Link>
+            <>
+                <div className="meter-container">
+                    <div className="meter-item">
+                        <b>Session time</b>: {this.state.elapsedDisplay}
+                    </div>
+                    <div className="meter-item">
+                        <b>Total tokens</b>: {(this.state.totalInputSpeechToken + this.state.totalInputTextToken + this.state.totalOutputSpeechToken + this.state.totalOutputTextToken).toLocaleString()} 
+                        &nbsp; ({this.formatCurrency(this.state.totalInputTextCost + this.state.totalInputSpeechCost + this.state.totalOutputTextCost + this.state.totalOutputSpeechCost)})
+                        &nbsp;&nbsp;<Link onClick={()=>{this.setState({showMeterDetail: true})}}><Icon name="support" /></Link>
+                    </div>
+                </div>
                 <Modal
                     onDismiss={() => this.setState({showMeterDetail: false})}
                     visible={this.state.showMeterDetail}
@@ -225,7 +231,7 @@ class Meter extends React.Component<{}, MeterState> {
                         </ColumnLayout>
                     </div>
                 </Modal>
-            </div>
+            </>
         );
     }
 }
