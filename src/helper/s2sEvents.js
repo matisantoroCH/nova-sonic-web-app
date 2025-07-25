@@ -31,17 +31,30 @@ class S2sEvent {
             {
                 toolSpec: {
                     name: "consultarOrder",
-                    description: "Consultar el estado y detalles de un pedido por ID",
+                    description: "Consultar el estado y detalles de un pedido por ID. Se requiere verificación de identidad con DNI o nombre completo.",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "order_id": {
+                                "orderId": {
                                     "type": "string",
                                     "description": "ID del pedido a consultar"
+                                },
+                                "dni": {
+                                    "type": "string",
+                                    "description": "Número de DNI del titular del pedido"
+                                },
+                                "customerName": {
+                                    "type": "string",
+                                    "description": "Nombre completo del titular del pedido"
                                 }
                             },
-                            "required": ["order_id"]
+                            "required": ["orderId"],
+                            "anyOf": [
+                                {"required": ["dni"]},
+                                {"required": ["customerName"]}
+                            ]
                         })
                     }
                 }
@@ -49,17 +62,30 @@ class S2sEvent {
             {
                 toolSpec: {
                     name: "cancelarOrder",
-                    description: "Cancelar un pedido existente por ID",
+                    description: "Cancelar un pedido existente por ID. Se requiere verificación de identidad con DNI o nombre completo.",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "order_id": {
+                                "orderId": {
                                     "type": "string",
                                     "description": "ID del pedido a cancelar"
+                                },
+                                "dni": {
+                                    "type": "string",
+                                    "description": "Número de DNI del titular del pedido"
+                                },
+                                "customerName": {
+                                    "type": "string",
+                                    "description": "Nombre completo del titular del pedido"
                                 }
                             },
-                            "required": ["order_id"]
+                            "required": ["orderId"],
+                            "anyOf": [
+                                {"required": ["dni"]},
+                                {"required": ["customerName"]}
+                            ]
                         })
                     }
                 }
@@ -70,31 +96,32 @@ class S2sEvent {
                     description: "Crear un nuevo pedido con items y datos del cliente",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "customer_name": {
+                                "customerName": {
                                     "type": "string",
-                                    "description": "Nombre del cliente"
+                                    "description": "Nombre completo del cliente"
+                                },
+                                "customerEmail": {
+                                    "type": "string",
+                                    "description": "Email del cliente"
                                 },
                                 "items": {
                                     "type": "array",
-                                    "description": "Lista de items del pedido",
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "product_id": {
-                                                "type": "string",
-                                                "description": "ID del producto"
-                                            },
-                                            "quantity": {
-                                                "type": "integer",
-                                                "description": "Cantidad del producto"
-                                            }
+                                            "name": {"type": "string"},
+                                            "quantity": {"type": "integer"},
+                                            "price": {"type": "number"},
+                                            "description": {"type": "string"}
                                         }
-                                    }
+                                    },
+                                    "description": "Lista de productos en el pedido"
                                 }
                             },
-                            "required": ["customer_name", "items"]
+                            "required": ["customerName", "customerEmail", "items"]
                         })
                     }
                 }
@@ -105,26 +132,39 @@ class S2sEvent {
                     description: "Agendar una nueva cita médica",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "patient_name": {
+                                "patientName": {
                                     "type": "string",
-                                    "description": "Nombre del paciente"
+                                    "description": "Nombre completo del paciente"
+                                },
+                                "patientEmail": {
+                                    "type": "string",
+                                    "description": "Email del paciente"
+                                },
+                                "doctorName": {
+                                    "type": "string",
+                                    "description": "Nombre del doctor"
                                 },
                                 "date": {
                                     "type": "string",
-                                    "description": "Fecha de la cita (YYYY-MM-DD)"
+                                    "description": "Fecha y hora de la cita (ISO format)"
                                 },
-                                "time": {
-                                    "type": "string",
-                                    "description": "Hora de la cita (HH:MM)"
+                                "duration": {
+                                    "type": "integer",
+                                    "description": "Duración en minutos"
                                 },
-                                "doctor": {
+                                "type": {
                                     "type": "string",
-                                    "description": "Nombre del doctor"
+                                    "description": "Tipo de cita (consultation, follow-up, emergency, routine)"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Notas adicionales"
                                 }
                             },
-                            "required": ["patient_name", "date", "time", "doctor"]
+                            "required": ["patientName", "patientEmail", "doctorName", "date"]
                         })
                     }
                 }
@@ -132,17 +172,22 @@ class S2sEvent {
             {
                 toolSpec: {
                     name: "cancelarTurno",
-                    description: "Cancelar una cita médica existente",
+                    description: "Cancelar una cita médica existente. Se requiere verificación de identidad con nombre del paciente.",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "appointment_id": {
+                                "appointmentId": {
                                     "type": "string",
                                     "description": "ID de la cita a cancelar"
+                                },
+                                "patientName": {
+                                    "type": "string",
+                                    "description": "Nombre completo del paciente"
                                 }
                             },
-                            "required": ["appointment_id"]
+                            "required": ["appointmentId", "patientName"]
                         })
                     }
                 }
@@ -150,25 +195,30 @@ class S2sEvent {
             {
                 toolSpec: {
                     name: "modificarTurno",
-                    description: "Modificar la fecha u hora de una cita médica",
+                    description: "Modificar la fecha u hora de una cita médica. Se requiere verificación de identidad con nombre del paciente.",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "appointment_id": {
+                                "appointmentId": {
                                     "type": "string",
                                     "description": "ID de la cita a modificar"
                                 },
-                                "new_date": {
+                                "patientName": {
                                     "type": "string",
-                                    "description": "Nueva fecha (YYYY-MM-DD)"
+                                    "description": "Nombre completo del paciente"
                                 },
-                                "new_time": {
+                                "newDate": {
                                     "type": "string",
-                                    "description": "Nueva hora (HH:MM)"
+                                    "description": "Nueva fecha (opcional)"
+                                },
+                                "newTime": {
+                                    "type": "string",
+                                    "description": "Nueva hora (opcional)"
                                 }
                             },
-                            "required": ["appointment_id"]
+                            "required": ["appointmentId", "patientName"]
                         })
                     }
                 }
@@ -176,17 +226,22 @@ class S2sEvent {
             {
                 toolSpec: {
                     name: "consultarTurno",
-                    description: "Consultar los detalles de una cita médica",
+                    description: "Consultar los detalles de una cita médica. Se requiere verificación de identidad con nombre del paciente.",
                     inputSchema: {
                         json: JSON.stringify({
+                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "properties": {
-                                "appointment_id": {
+                                "appointmentId": {
                                     "type": "string",
                                     "description": "ID de la cita a consultar"
+                                },
+                                "patientName": {
+                                    "type": "string",
+                                    "description": "Nombre completo del paciente"
                                 }
                             },
-                            "required": ["appointment_id"]
+                            "required": ["appointmentId", "patientName"]
                         })
                     }
                 }
