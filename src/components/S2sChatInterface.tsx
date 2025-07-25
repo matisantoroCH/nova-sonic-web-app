@@ -105,7 +105,7 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
     sendEvent(event: any) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             const eventType = Object.keys(event?.event)[0];
-            console.log(`📤 Sending event: ${eventType}`);
+            //console.log(`📤 Sending event: ${eventType}`);
             this.socket.send(JSON.stringify(event));
             event.timestamp = Date.now();
 
@@ -122,6 +122,8 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
 
     handleIncomingMessage(message: any) {
         const eventType = Object.keys(message?.event)[0];
+        //console.log("📨 Frontend: Received event:", eventType);
+        
         const role = message.event[eventType]["role"];
         const content = message.event[eventType]["content"];
         const contentId = message.event[eventType].contentId;
@@ -150,11 +152,15 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
                 break;
             case "audioOutput":
                 try {
+                    console.log("🎵 Frontend: AudioOutput event received");
                     const base64Data = message.event[eventType].content;
+                    console.log("🎵 Frontend: Audio data length:", base64Data.length);
                     const audioData = base64ToFloat32Array(base64Data);
+                    console.log("🎵 Frontend: Converted to Float32Array, length:", audioData.length);
                     this.audioPlayer.playAudio(audioData);
+                    console.log("🎵 Frontend: Audio sent to player successfully");
                 } catch (error) {
-                    console.error("Error processing audio chunk:", error);
+                    console.error("❌ Frontend: Error processing audio chunk:", error);
                 }
                 break;
             case "contentStart":
@@ -441,7 +447,7 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
                         </Button>
                         <div className='chathistory'>
                             <Checkbox checked={this.state.includeChatHistory} onChange={({ detail }) => this.setState({includeChatHistory: detail.checked})}>Include chat history</Checkbox>
-                            <div className='desc'>You can view sample chat history in the settings.</div>
+                            <div className='desc'>Podés ver el historial de conversación en la configuración.</div>
                         </div>
                     </div>
                     {this.state.showUsage && <Meter ref={this.meterRef}/>}
