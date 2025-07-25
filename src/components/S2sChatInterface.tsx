@@ -104,10 +104,14 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
     
     sendEvent(event: any) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            const eventType = Object.keys(event?.event)[0];
+            console.log(`📤 Sending event: ${eventType}`);
             this.socket.send(JSON.stringify(event));
             event.timestamp = Date.now();
 
             this.eventDisplayRef.current?.displayEvent(event, "out");
+        } else {
+            console.warn("⚠️ WebSocket not ready for sending event");
         }
     }
     
@@ -358,12 +362,15 @@ class S2sChatBot extends React.Component<{}, S2sChatBotState> {
     
                     const currentState = this.stateRef.current;
                     if (currentState) {
+                        console.log(`🎤 Sending audio chunk - Prompt: ${currentState.promptName}, Content: ${currentState.audioContentName}`);
                         const event = S2sEvent.audioInput(
                             currentState.promptName,
                             currentState.audioContentName,
                             btoa(binary)
                         );
                         this.sendEvent(event);
+                    } else {
+                        console.warn("⚠️ No current state available for audio input");
                     }
                 }
             };
