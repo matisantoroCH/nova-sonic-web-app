@@ -21,7 +21,7 @@ import { WebSocketMessage } from '@/types';
 import useAppStore from '@/lib/store';
 import Swal from 'sweetalert2';
 import { useNovaSonicAudio } from '@/hooks/useNovaSonicAudio';
-import { S2sEvent } from '@/helper/s2sEvents';
+import S2sEvent from '@/helper/s2sEvents';
 
 interface Message {
     id: string;
@@ -38,7 +38,7 @@ export default function ChatInterface() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [showConfig, setShowConfig] = useState(false);
     const [configVoiceId, setConfigVoiceId] = useState('carlos');
-    const [configSystemPrompt, setConfigSystemPrompt] = useState('Eres Carlos, el asistente virtual de Nova Sonic. Eres amable, profesional y hablas en español argentino. Tu función es ayudar a los usuarios con: - Consultar, cancelar y crear pedidos - Agendar, cancelar, modificar y consultar citas médicas Siempre responde de forma clara y natural. Si necesitas más información, pídela amablemente. IMPORTANTE: Cuando uses herramientas (tools), SIEMPRE envía los números como dígitos, no como palabras. Por ejemplo: usa \'6\' en lugar de \'seis\', \'627\' en lugar de \'seiscientos veintisiete\', \'10065\' en lugar de \'diez mil sesenta y cinco\'. Esto es crucial para que las herramientas funcionen correctamente.');
+    const [configSystemPrompt, setConfigSystemPrompt] = useState('Eres Carlos, el asistente virtual de Nova Sonic. Eres amable, profesional y hablas en español argentino. Tu función es ayudar a los usuarios con: - Consultar, cancelar y crear pedidos - Agendar, cancelar, modificar y consultar citas médicas Siempre responde de forma clara y natural. Si necesitas más información, pídela amablemente. IMPORTANTE: Cuando uses herramientas (tools), SIEMPRE envía los números como dígitos, no como palabras. Por ejemplo: usa \'6\' en lugar de \'seis\', \'627\' en lugar de \'seiscientos veintisiete\', \'10065\' en lugar de \'diez mil sesenta y cinco\'. Para consultar o cancelar pedidos, SIEMPRE pide DNI o nombre completo para verificar identidad. Para consultar, cancelar o modificar citas, SIEMPRE pide nombre del paciente para verificar identidad. Esto es crucial para que las herramientas funcionen correctamente.');
     const [configToolUse, setConfigToolUse] = useState('{}');
     const [configChatHistory, setConfigChatHistory] = useState('[]');
     const [includeChatHistory, setIncludeChatHistory] = useState(false);
